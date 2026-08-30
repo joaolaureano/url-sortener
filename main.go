@@ -1,19 +1,33 @@
+// Command urlshortener demonstrates the shortening round trip.
 package main
 
 import (
-	"awesomeProject1/operator"
-	"log"
+	"log/slog"
+	"os"
+
+	"urlshortener/operator"
 )
 
 func main() {
-	url := "https://www.mercadolivre.com.br/"
+	if err := run("https://www.mercadolivre.com.br/"); err != nil {
+		slog.Error("url shortener failed", "error", err)
+		os.Exit(1)
+	}
+}
 
-	shortUrl := operator.CreateNewShortURL(url)
-	log.Printf("Current URL : %s\n", url)
-	log.Printf("New URL : %s\n", shortUrl)
+func run(originalURL string) error {
+	shortURL, err := operator.CreateNewShortURL(originalURL)
+	if err != nil {
+		return err
+	}
 
-	recoveredUrl := operator.RecoverOriginalURL(shortUrl)
+	recoveredURL, err := operator.RecoverOriginalURL(shortURL)
+	if err != nil {
+		return err
+	}
 
-	log.Printf("Short URL : %s\n", shortUrl)
-	log.Printf("Recovered URL : %s\n", recoveredUrl)
+	slog.Info("round trip complete",
+		"original", originalURL, "short", shortURL, "recovered", recoveredURL)
+
+	return nil
 }

@@ -1,0 +1,11 @@
+# Build output
+/url-sortener
+/urlshortener
+
+# Test and coverage artifacts
+*.out
+*.test
+
+# Generated tooling caches (knowledge graph, language server)
+/graphify-out/
+/.serena/
