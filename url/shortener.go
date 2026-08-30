@@ -7,9 +7,8 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"net/url"
 	"strings"
-
-	"github.com/asaskevich/govalidator"
 
 	"urlshortener/hash"
 )
@@ -48,7 +47,7 @@ var (
 //
 // It returns ErrInvalidURL if originalURL is not a valid URL.
 func ShortCode(originalURL string, attempt int) (string, error) {
-	if !govalidator.IsURL(originalURL) {
+	if !isAbsoluteURL(originalURL) {
 		return "", fmt.Errorf("%w: %q", ErrInvalidURL, originalURL)
 	}
 
@@ -74,6 +73,15 @@ func ExtractCode(shortURL string) (string, error) {
 	}
 
 	return code, nil
+}
+
+// isAbsoluteURL reports whether raw is a well-formed absolute URL: a parseable
+// URL carrying both a scheme and a host. net/url.Parse is used rather than a
+// validation regexp because the regexp path dominated the CPU profile of
+// shortening -- ~70% of samples -- while adding nothing this service needs.
+func isAbsoluteURL(raw string) bool {
+	u, err := url.Parse(raw)
+	return err == nil && u.Scheme != "" && u.Host != ""
 }
 
 // base62 renders n as a zero-padded, fixed-width base62 code.
