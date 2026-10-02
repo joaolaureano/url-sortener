@@ -1,5 +1,7 @@
 # urlshortener
 
+**[Leia em português / Read this in Portuguese](README.pt-BR.md)**
+
 A small URL shortener in Go. It maps a long URL to a short, fixed-width code
 and back again, in four layers with a single dependency-free module.
 
